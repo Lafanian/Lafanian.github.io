@@ -1,35 +1,32 @@
-<html ng-app="custom-webapp-ui" lang="en" style="background-color: white">
-  <head>
-    <!-- Load the Telegram Library -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!--Load the AngularJS Library-->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Bot Web App</title>
+</head>
+<body>
+    <h1>Telegram Bot Web App</h1>
+
+    <button onclick="getChatId()">Get Chat ID</button>
+    <p id="chatIdDisplay"></p>
+
     <script>
-      //initialize the AngularJS stuff...
-      angular.module("custom-webapp-ui", []).controller('CustomUIController', function CustomUIController($scope) {
-        //init our slider values that we will display
-        $scope.foods = [
-                { name: "fruits", value: 5 },
-                { name: "vegetables", value: 5 },
-                { name: "meat", value: 5 },
-                { name: "dairy", value: 5 }
-            ];
-        //initialize the button
-        const mainButton = window.Telegram.WebApp.MainButton;
-        mainButton.text = "Save Preferences";
-        mainButton.enable();
-        mainButton.show();
-        // and make it send the "foods" object (as JSON string) back to the bot
-        mainButton.onClick(function(){
-          window.Telegram.WebApp.sendData(JSON.stringify($scope.foods));
-        })
-      });
+        async function getChatId() {
+            try {
+                const response = await fetch('/get_chat_id');
+                const data = await response.json();
+
+                if (data && data.chat_id) {
+                    document.getElementById('chatIdDisplay').innerText = `Chat ID: ${data.chat_id}`;
+                } else {
+                    document.getElementById('chatIdDisplay').innerText = 'Error fetching chat ID.';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('chatIdDisplay').innerText = 'Error fetching chat ID.';
+            }
+        }
     </script>
-  </head>
-  <body ng-controller="CustomUIController">
-    <div ng-repeat="food in foods">
-      <div style="width: 100px; display: inline-block">{{food.name}} : {{food.value}}</div>
-      <input style="display: inline-block" type="range" min="1" max="10" ng-model="food.value" value="{{food.value}}">
-    </div>
-  </body>
+</body>
 </html>
